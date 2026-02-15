@@ -187,8 +187,8 @@ jobs:
           # Install SAM CLI
           pip install aws-sam-cli
 
-          # Deploys Lambda and API Gateway together (one CloudFormation stack).
-          # API Gateway is created/updated automatically; no need to create it beforehand.
+          # Single stack (supportdesk-api): first run creates it, later runs update in place.
+          # Only one API Gateway is ever created; sam deploy never creates a second stack.
           sam deploy \
             --template-file aws/template.yaml \
             --stack-name supportdesk-api \

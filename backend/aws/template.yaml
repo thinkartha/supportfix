@@ -45,6 +45,14 @@ Parameters:
     Type: String
     Default: '*'
     Description: Frontend URL for CORS (e.g., https://yourdomain.com)
+  VpcId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /supportdesk/vpc-id
+    Description: SSM parameter path for VPC ID
+  SubnetIds:
+    Type: AWS::SSM::Parameter::Value<List<String>>
+    Default: /supportdesk/subnet-ids
+    Description: SSM parameter path for subnet ID list
 
 Resources:
   SupportDeskApi:
@@ -89,14 +97,6 @@ Resources:
     Properties:
       GroupDescription: Security group for SupportDesk Lambda function
       VpcId: !Ref VpcId
-
-  SubnetIds:
-    Type: AWS::SSM::Parameter::Value<List<String>>
-    Default: /supportdesk/subnet-ids
-
-  VpcId:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /supportdesk/vpc-id
 
 Outputs:
   ApiUrl:
