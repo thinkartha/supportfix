@@ -6,22 +6,22 @@ on:
   workflow_dispatch:
     inputs:
       deploy_target:
-        description: "What to deploy"
+        description: "Pipeline to run"
         required: true
         default: "all"
         type: choice
         options:
           - all
-          - backend-only
-          - frontend-only
           - db-only
+          - lambda-only
+          - s3-cloudfront-only
 
 # -------------------------------------------------------------------
 # Required GitHub Secrets:
 #   AWS_ACCESS_KEY_ID        - IAM user with Lambda, S3, CloudFront, SAM
 #   AWS_SECRET_ACCESS_KEY    - IAM user secret
 #   AWS_REGION               - e.g. us-east-1
-#   DB_HOST                  - RDS endpoint
+#   DB_HOST                  - RDS endpoint (for Lambda/API)
 #   DB_PORT                  - default 5432
 #   DB_USER                  - postgres user
 #   DB_PASSWORD              - postgres password
@@ -146,7 +146,7 @@ jobs:
       (needs.deploy-database.result == 'success' || needs.deploy-database.result == 'skipped') &&
       (
         (needs.changes.outputs.backend == 'true') ||
-        (github.event.inputs.deploy_target == 'backend-only') ||
+        (github.event.inputs.deploy_target == 'lambda-only') ||
         (github.event.inputs.deploy_target == 'all')
       )
     steps:
@@ -220,7 +220,7 @@ jobs:
       (needs.deploy-backend.result == 'success' || needs.deploy-backend.result == 'skipped') &&
       (
         (needs.changes.outputs.frontend == 'true') ||
-        (github.event.inputs.deploy_target == 'frontend-only') ||
+        (github.event.inputs.deploy_target == 's3-cloudfront-only') ||
         (github.event.inputs.deploy_target == 'all')
       )
     steps:
@@ -320,8 +320,8 @@ jobs:
           echo "========================================"
           echo ""
           echo "Database:  ${{ needs.deploy-database.result }}"
-          echo "Backend:   ${{ needs.deploy-backend.result }}"
-          echo "Frontend:  ${{ needs.deploy-frontend.result }}"
+          echo "Lambda:    ${{ needs.deploy-backend.result }}"
+          echo "S3 + CF:   ${{ needs.deploy-frontend.result }}"
           echo ""
           echo "========================================"
 
