@@ -313,6 +313,18 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ steps.api_url.outputs.url }}
         run: pnpm build
 
+      - name: Check required frontend secrets
+        run: |
+          if [[ -z "${{ secrets.S3_BUCKET_NAME }}" ]]; then
+            echo "::error::S3_BUCKET_NAME secret is not set. Set it in repo Settings -> Secrets -> Actions."
+            exit 1
+          fi
+          if [[ -z "${{ secrets.CLOUDFRONT_DISTRIBUTION }}" ]]; then
+            echo "::error::CLOUDFRONT_DISTRIBUTION secret is not set. Set it in repo Settings -> Secrets -> Actions (your CloudFront distribution ID, e.g. E1234ABCD)."
+            exit 1
+          fi
+          echo "S3 and CloudFront secrets are set."
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -337,14 +349,14 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION }} \
+            --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION }}" \
             --paths "/*"
           echo "CloudFront cache invalidated."
 
       - name: Output frontend URL
         run: |
           DOMAIN=$(aws cloudfront get-distribution \
-            --id ${{ secrets.CLOUDFRONT_DISTRIBUTION }} \
+            --id "${{ secrets.CLOUDFRONT_DISTRIBUTION }}" \
             --query "Distribution.DomainName" \
             --output text)
           echo "Frontend deployed at: https://$DOMAIN"
