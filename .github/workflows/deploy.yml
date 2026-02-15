@@ -158,6 +158,10 @@ jobs:
           # Hardcoded for AWS Lambda (provided.al2023); use a supported Go version.
           go-version: "1.22"
 
+      - name: Ensure go.sum is complete
+        working-directory: backend
+        run: go mod tidy
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
