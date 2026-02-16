@@ -30,7 +30,7 @@ Parameters:
   FrontendURL:
     Type: String
     Default: '*'
-    Description: Frontend URL for CORS (e.g., https://supportfix.ai)
+    Description: Frontend URL for CORS (e.g., https://supportfix.ai - no trailing slash)
 
 Resources:
   SupportDeskApi:
@@ -40,6 +40,7 @@ Resources:
       CorsConfiguration:
         AllowOrigins:
           - !Ref FrontendURL
+        AllowCredentials: true
         AllowMethods:
           - GET
           - POST
