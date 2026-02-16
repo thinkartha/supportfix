@@ -1,12 +1,12 @@
 {
   "info": {
-    "name": "SupportDesk API (API Gateway)",
-    "description": "Test SupportDesk API via API Gateway. Set **baseUrl** to your API Gateway URL (e.g. https://xxxx.execute-api.us-east-1.amazonaws.com/prod). Run **Login** first, then use **token** for protected routes.",
+    "name": "SupportDesk API",
+    "description": "SupportDesk API – Production (https://api.supportfix.ai). Run **Auth → Login** first; token is saved automatically. Create admin user: see `backend/scripts/SEED-ADMIN.md`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/prod" },
-    { "key": "token", "value": "" }
+    {"key": "baseUrl", "value": "https://api.supportfix.ai"},
+    {"key": "token", "value": ""}
   ],
   "item": [
     {
@@ -28,10 +28,10 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [{"key": "Content-Type", "value": "application/json"}],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"your-password\"\n}"
+              "raw": "{\n  \"email\": \"admin@supportfix.ai\",\n  \"password\": \"your-password\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/login"
           }
@@ -40,7 +40,7 @@
           "name": "Me (current user)",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/auth/me"
           }
         }
@@ -65,7 +65,7 @@
           "name": "List users",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/users"
           }
         },
@@ -73,7 +73,7 @@
           "name": "Get user by ID",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/users/:id"
           }
         },
@@ -82,8 +82,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -97,8 +97,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -111,7 +111,7 @@
           "name": "Delete user",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/users/:id"
           }
         }
@@ -124,7 +124,7 @@
           "name": "List organizations",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/organizations"
           }
         },
@@ -132,7 +132,7 @@
           "name": "Get organization by ID",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/organizations/:id"
           }
         },
@@ -141,8 +141,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -156,8 +156,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -170,7 +170,7 @@
           "name": "Delete organization",
           "request": {
             "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/organizations/:id"
           }
         }
@@ -183,15 +183,15 @@
           "name": "List tickets",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/tickets",
             "urlQuery": [
-              { "key": "status", "value": "open", "disabled": true },
-              { "key": "priority", "value": "high", "disabled": true },
-              { "key": "category", "value": "", "disabled": true },
-              { "key": "organizationId", "value": "", "disabled": true },
-              { "key": "assignedTo", "value": "", "disabled": true },
-              { "key": "search", "value": "", "disabled": true }
+              {"key": "status", "value": "open", "disabled": true},
+              {"key": "priority", "value": "high", "disabled": true},
+              {"key": "category", "value": "", "disabled": true},
+              {"key": "organizationId", "value": "", "disabled": true},
+              {"key": "assignedTo", "value": "", "disabled": true},
+              {"key": "search", "value": "", "disabled": true}
             ]
           }
         },
@@ -199,7 +199,7 @@
           "name": "Get ticket by ID",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/tickets/:id"
           }
         },
@@ -208,8 +208,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -223,8 +223,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -238,8 +238,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -253,8 +253,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -268,8 +268,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -287,7 +287,7 @@
           "name": "List approvals",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/approvals"
           }
         },
@@ -296,8 +296,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -315,7 +315,7 @@
           "name": "List invoices",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/invoices"
           }
         },
@@ -324,8 +324,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -339,8 +339,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
             ],
             "body": {
               "mode": "raw",
@@ -358,7 +358,7 @@
           "name": "Dashboard stats",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/dashboard/stats"
           }
         },
@@ -366,7 +366,7 @@
           "name": "Dashboard activities",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
             "url": "{{baseUrl}}/api/dashboard/activities"
           }
         }
