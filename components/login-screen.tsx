@@ -33,7 +33,7 @@ export function LoginScreen() {
               <Headphones className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-2xl font-bold tracking-wider text-foreground uppercase">
-              SupportDesk
+              SupportFIX
             </h1>
           </div>
           <p className="text-sm tracking-wide text-muted-foreground uppercase">
@@ -57,7 +57,7 @@ export function LoginScreen() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@supportdesk.io"
+              placeholder="Enter email"
               className="w-full rounded-md border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none"
               required
             />
@@ -71,7 +71,7 @@ export function LoginScreen() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Enter password"
               className="w-full rounded-md border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none"
               required
             />
