@@ -20,6 +20,7 @@ type User struct {
 	Role           string    `json:"role"`
 	OrganizationID *string   `json:"organizationId"`
 	Avatar         string    `json:"avatar"`
+	Phone          string    `json:"phone"`
 	CreatedAt      time.Time `json:"createdAt"`
 }
 
@@ -31,6 +32,7 @@ type UserResponse struct {
 	Role           string  `json:"role"`
 	OrganizationID *string `json:"organizationId"`
 	Avatar         string  `json:"avatar"`
+	Phone          string  `json:"phone"`
 }
 
 func (u *User) ToResponse() UserResponse {
@@ -41,6 +43,7 @@ func (u *User) ToResponse() UserResponse {
 		Role:           u.Role,
 		Avatar:         u.Avatar,
 		OrganizationID: u.OrganizationID,
+		Phone:          u.Phone,
 	}
 	return r
 }
@@ -253,4 +256,18 @@ type DashboardStats struct {
 
 type ErrorResponse struct {
 	Error string `json:"error"`
+}
+
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+}
+
+type UpdateMyProfileRequest struct {
+	Name  *string `json:"name,omitempty"`
+	Phone *string `json:"phone,omitempty"`
+}
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email"`
 }

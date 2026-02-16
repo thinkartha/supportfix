@@ -1,6 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { useStore } from "@/lib/store"
+import { ProfileModal } from "@/components/profile-modal"
 import type { UserRole } from "@/lib/types"
 import {
   LayoutDashboard,
@@ -83,6 +85,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { currentUser, logout, getUserById, getOrgById, tickets } = useStore()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   if (!currentUser) return null
 
@@ -167,7 +170,11 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
 
       {/* User section */}
       <div className="border-t border-border p-3">
-        <div className="mb-2 flex items-center gap-2.5 rounded-md bg-secondary/50 px-3 py-2.5">
+        <button
+          type="button"
+          onClick={() => setProfileOpen(true)}
+          className="mb-2 flex w-full items-center gap-2.5 rounded-md bg-secondary/50 px-3 py-2.5 text-left transition-colors hover:bg-secondary"
+        >
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-border bg-card text-[10px] font-bold tracking-wider text-foreground">
             {currentUser.avatar}
           </div>
@@ -177,7 +184,8 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             </p>
             <p className="text-[10px] text-muted-foreground truncate">{orgName}</p>
           </div>
-        </div>
+        </button>
+        <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
         <button
           onClick={logout}
           className="flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-[11px] font-medium tracking-wider text-muted-foreground transition-colors hover:bg-secondary hover:text-destructive"

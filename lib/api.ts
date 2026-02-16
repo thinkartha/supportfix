@@ -64,6 +64,27 @@ export async function getMe(): Promise<import("./types").User> {
   return apiFetch("/api/auth/me")
 }
 
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ status: string }> {
+  return apiFetch("/api/auth/change-password", {
+    method: "PUT",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+}
+
+export async function updateMyProfile(data: { name?: string; phone?: string }): Promise<import("./types").User> {
+  return apiFetch("/api/auth/me", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  return apiFetch("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  })
+}
+
 export function logout() {
   setToken(null)
 }

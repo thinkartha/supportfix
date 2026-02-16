@@ -26,6 +26,7 @@ func Setup(st store.Store, cfg *config.Config) http.Handler {
 
 	// Public routes
 	mux.HandleFunc("POST /api/auth/login", authH.Login)
+	mux.HandleFunc("POST /api/auth/forgot-password", authH.ForgotPassword)
 
 	// Health check
 	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
@@ -35,6 +36,8 @@ func Setup(st store.Store, cfg *config.Config) http.Handler {
 
 	// Protected routes - wrap with auth middleware
 	mux.Handle("GET /api/auth/me", authMW(http.HandlerFunc(authH.Me)))
+	mux.Handle("PUT /api/auth/change-password", authMW(http.HandlerFunc(authH.ChangePassword)))
+	mux.Handle("PUT /api/auth/me", authMW(http.HandlerFunc(authH.UpdateMyProfile)))
 
 	mux.Handle("GET /api/users", authMW(http.HandlerFunc(userH.List)))
 	mux.Handle("GET /api/users/{id}", authMW(http.HandlerFunc(userH.Get)))

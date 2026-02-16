@@ -14,6 +14,8 @@ type Store interface {
 	ListUsers(ctx context.Context, role, orgID string) ([]models.UserResponse, error)
 	CreateUser(ctx context.Context, u *models.User) error
 	UpdateUser(ctx context.Context, id string, name, email, role *string, orgID *string, avatar *string) error
+	UpdateMyProfile(ctx context.Context, id string, name, phone *string) error
+	UpdatePassword(ctx context.Context, id string, newHash string) error
 	DeleteUser(ctx context.Context, id string) error
 
 	// Organizations

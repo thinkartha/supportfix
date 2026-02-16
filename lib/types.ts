@@ -25,6 +25,7 @@ export interface User {
   role: UserRole
   organizationId: string | null
   avatar: string
+  phone?: string
 }
 
 export interface Message {

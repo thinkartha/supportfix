@@ -153,6 +153,9 @@ func (s *DynamoStore) CreateUser(ctx context.Context, u *models.User) error {
 	if u.OrganizationID != nil && *u.OrganizationID != "" {
 		item["organization_id"] = &types.AttributeValueMemberS{Value: *u.OrganizationID}
 	}
+	if u.Phone != "" {
+		item["phone"] = &types.AttributeValueMemberS{Value: u.Phone}
+	}
 	_, err := s.client.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(s.usersTable),
 		Item:      item,
@@ -234,6 +237,63 @@ func (s *DynamoStore) UpdateUser(ctx context.Context, id string, name, email, ro
 	return err
 }
 
+func (s *DynamoStore) UpdateMyProfile(ctx context.Context, id string, name, phone *string) error {
+	var setParts []string
+	attrs := map[string]types.AttributeValue{}
+	names := map[string]string{}
+
+	if name != nil {
+		names["#n"] = "name"
+		setParts = append(setParts, "#n = :name", "avatar = :avatar")
+		attrs[":name"] = &types.AttributeValueMemberS{Value: *name}
+		initials := ""
+		for _, w := range strings.Fields(*name) {
+			if len(w) > 0 {
+				initials += string([]rune(w)[0])
+			}
+		}
+		if len(initials) > 2 {
+			initials = initials[:2]
+		}
+		attrs[":avatar"] = &types.AttributeValueMemberS{Value: strings.ToUpper(initials)}
+	}
+	if phone != nil {
+		setParts = append(setParts, "phone = :phone")
+		attrs[":phone"] = &types.AttributeValueMemberS{Value: *phone}
+	}
+	if len(setParts) == 0 {
+		return nil
+	}
+
+	input := &dynamodb.UpdateItemInput{
+		TableName: aws.String(s.usersTable),
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: id},
+		},
+		UpdateExpression: aws.String("SET " + strings.Join(setParts, ", ")),
+	}
+	if len(names) > 0 {
+		input.ExpressionAttributeNames = names
+	}
+	input.ExpressionAttributeValues = attrs
+	_, err := s.client.UpdateItem(ctx, input)
+	return err
+}
+
+func (s *DynamoStore) UpdatePassword(ctx context.Context, id string, newHash string) error {
+	_, err := s.client.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName: aws.String(s.usersTable),
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: id},
+		},
+		UpdateExpression: aws.String("SET password_hash = :ph"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":ph": &types.AttributeValueMemberS{Value: newHash},
+		},
+	})
+	return err
+}
+
 func (s *DynamoStore) DeleteUser(ctx context.Context, id string) error {
 	_, err := s.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		TableName: aws.String(s.usersTable),
@@ -266,6 +326,7 @@ func itemToUser(item map[string]types.AttributeValue) (*models.User, error) {
 		Role:           getStr(item, "role"),
 		OrganizationID: orgID,
 		Avatar:         getStr(item, "avatar"),
+		Phone:          getStr(item, "phone"),
 		CreatedAt:      createdAt,
 	}, nil
 }

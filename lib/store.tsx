@@ -30,6 +30,9 @@ interface StoreContextType {
 
   loginWithCredentials: (email: string, password: string) => Promise<void>
   logout: () => void
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  updateMyProfile: (data: { name?: string; phone?: string }) => Promise<void>
+  forgotPassword: (email: string) => Promise<void>
 
   createTicket: (ticket: Omit<Ticket, "id" | "createdAt" | "updatedAt" | "hoursWorked" | "messages" | "timeEntries">) => Promise<void>
   updateTicketStatus: (ticketId: string, status: TicketStatus) => Promise<void>
@@ -132,6 +135,32 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setInvoices([])
     setActivities([])
     api.logout()
+  }, [])
+
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      await api.changePassword(currentPassword, newPassword)
+    },
+    []
+  )
+
+  const updateMyProfile = useCallback(
+    async (data: { name?: string; phone?: string }) => {
+      const user = await api.updateMyProfile(data)
+      setCurrentUser(user)
+      setUsers((prev) => {
+        const idx = prev.findIndex((u) => u.id === user.id)
+        if (idx < 0) return prev
+        const next = [...prev]
+        next[idx] = user
+        return next
+      })
+    },
+    []
+  )
+
+  const forgotPassword = useCallback(async (email: string) => {
+    await api.forgotPassword(email)
   }, [])
 
   // Tickets
@@ -313,6 +342,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         loading,
         loginWithCredentials,
         logout,
+        changePassword,
+        updateMyProfile,
+        forgotPassword,
         createTicket,
         updateTicketStatus,
         updateTicketPriority,
