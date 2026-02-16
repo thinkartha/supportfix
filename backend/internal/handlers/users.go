@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -121,8 +122,21 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		avatar = &a
 	}
 
-	if err := h.Store.UpdateUser(r.Context(), userIDParam, input.Name, input.Email, input.Role, input.OrganizationID, avatar); err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to update user")
+	// Determine organization_id update: clear when role is internal, or when client has none
+	orgIDToUpdate := input.OrganizationID
+	if input.Role != nil {
+		if *input.Role != "client" {
+			empty := ""
+			orgIDToUpdate = &empty // clear org for admin/support-staff/support-lead
+		} else if input.OrganizationID == nil {
+			empty := ""
+			orgIDToUpdate = &empty // client with no org = remove attribute
+		}
+	}
+
+	if err := h.Store.UpdateUser(r.Context(), userIDParam, input.Name, input.Email, input.Role, orgIDToUpdate, avatar); err != nil {
+		log.Printf("UpdateUser error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to update user: "+err.Error())
 		return
 	}
 

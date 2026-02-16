@@ -161,10 +161,12 @@ func (s *DynamoStore) CreateUser(ctx context.Context, u *models.User) error {
 }
 
 func (s *DynamoStore) UpdateUser(ctx context.Context, id string, name, email, role, orgID, avatar *string) error {
-	expr := "SET "
-	attrs := map[string]types.AttributeValue{":id": &types.AttributeValueMemberS{Value: id}}
+	var setParts []string
+	attrs := map[string]types.AttributeValue{}
+	names := map[string]string{"#n": "name", "#r": "role"}
+
 	if name != nil {
-		expr += " #n = :name, avatar = :avatar, "
+		setParts = append(setParts, "#n = :name", "avatar = :avatar")
 		attrs[":name"] = &types.AttributeValueMemberS{Value: *name}
 		initials := ""
 		for _, w := range strings.Fields(*name) {
@@ -178,36 +180,57 @@ func (s *DynamoStore) UpdateUser(ctx context.Context, id string, name, email, ro
 		attrs[":avatar"] = &types.AttributeValueMemberS{Value: strings.ToUpper(initials)}
 	}
 	if email != nil {
-		expr += " email = :email, "
+		setParts = append(setParts, "email = :email")
 		attrs[":email"] = &types.AttributeValueMemberS{Value: *email}
 	}
 	if role != nil {
-		expr += " #r = :role, "
+		setParts = append(setParts, "#r = :role")
 		attrs[":role"] = &types.AttributeValueMemberS{Value: *role}
 	}
 	if orgID != nil {
-		expr += " organization_id = :org_id, "
-		attrs[":org_id"] = &types.AttributeValueMemberS{Value: *orgID}
-	}
-	if avatar != nil {
-		expr += " avatar = :avatar, "
-		if _, ok := attrs[":avatar"]; !ok {
-			attrs[":avatar"] = &types.AttributeValueMemberS{Value: *avatar}
+		if *orgID == "" {
+			// Remove organization_id when clearing (e.g. user changed to admin)
+			// Handled below with REMOVE
+		} else {
+			setParts = append(setParts, "organization_id = :org_id")
+			attrs[":org_id"] = &types.AttributeValueMemberS{Value: *orgID}
 		}
 	}
-	expr = strings.TrimSuffix(strings.TrimSuffix(expr, ", "), ", ")
-	if expr == "SET " {
+	if avatar != nil && name == nil {
+		// Only add avatar separately when name wasn't updated (name update already sets avatar from initials)
+		setParts = append(setParts, "avatar = :avatar")
+		attrs[":avatar"] = &types.AttributeValueMemberS{Value: *avatar}
+	}
+
+	var updateExpr string
+	if len(setParts) > 0 {
+		updateExpr = "SET " + strings.Join(setParts, ", ")
+	}
+	if orgID != nil && *orgID == "" {
+		if updateExpr != "" {
+			updateExpr += " REMOVE organization_id"
+		} else {
+			updateExpr = "REMOVE organization_id"
+		}
+	}
+	if updateExpr == "" {
 		return nil
 	}
-	_, err := s.client.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+
+	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(s.usersTable),
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{Value: id},
 		},
-		UpdateExpression:          aws.String(expr),
-		ExpressionAttributeNames:  map[string]string{"#n": "name", "#r": "role"},
-		ExpressionAttributeValues: attrs,
-	})
+		UpdateExpression: aws.String(updateExpr),
+	}
+	if len(names) > 0 {
+		input.ExpressionAttributeNames = names
+	}
+	if len(attrs) > 0 {
+		input.ExpressionAttributeValues = attrs
+	}
+	_, err := s.client.UpdateItem(ctx, input)
 	return err
 }
 
